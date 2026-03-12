@@ -1,0 +1,10 @@
+numpy
+scipy
+matplotlib
+sounddevice
+pyaudio
+flask
+boto3
+pandas
+psutil
+RPi.GPIO

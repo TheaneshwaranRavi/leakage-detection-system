@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "🚀 Installing Leakage Detection System from GitHub..."
-echo "=" * 60
+echo "============================================================"
 
 # Update system
 echo "📦 Updating system packages..."
@@ -10,10 +10,22 @@ sudo apt upgrade -y
 
 # Install Python dependencies
 echo "🐍 Installing Python packages..."
-sudo apt install -y python3-pip python3-dev portaudio19-dev
+sudo apt install -y python3-pip python3-dev portaudio19-dev git
+
+# Clone the repository
+echo "📥 Downloading leakage detection system..."
+INSTALL_DIR="/home/pi/leakage-detection-system"
+if [ -d "$INSTALL_DIR" ]; then
+    echo "Updating existing installation..."
+    cd "$INSTALL_DIR"
+    git pull
+else
+    git clone https://github.com/TheaneshwaranRavi/leakage-detection-system.git "$INSTALL_DIR"
+    cd "$INSTALL_DIR"
+fi
 
 # Install Python libraries
-pip3 install numpy scipy matplotlib sounddevice pyaudio flask psutil RPi.GPIO
+pip3 install -r requirements.txt
 
 # Enable I2S (non-interactive)
 echo "🔧 Enabling I2S interface..."
@@ -39,17 +51,16 @@ chmod +x install.sh
 
 # Create systemd service
 echo "⚙️  Creating system service..."
-sudo tee /etc/systemd/system/leakage-detection.service > /dev/null <<'EOF'
+sudo tee /etc/systemd/system/leakage-detection.service > /dev/null <<EOF
 [Unit]
 Description=Leakage Detection System
 After=network.target sound.target
-Wants=leakage-detection.service
 
 [Service]
 Type=simple
 User=pi
-WorkingDirectory=/home/pi/leakage-detection-system
-ExecStart=/usr/bin/python3 /home/pi/leakage-detection-system/main.py
+WorkingDirectory=$INSTALL_DIR
+ExecStart=/usr/bin/python3 $INSTALL_DIR/main.py
 Restart=always
 RestartSec=10
 
@@ -67,7 +78,7 @@ IP=$(hostname -I | awk '{print $1}')
 
 echo ""
 echo "🎉 INSTALLATION COMPLETE!"
-echo "=" * 60
+echo "============================================================"
 echo "🌐 Web Dashboard: http://$IP:5000"
 echo "📊 Service Status: sudo systemctl status leakage-detection"
 echo "📋 View Logs: sudo journalctl -u leakage-detection -f"

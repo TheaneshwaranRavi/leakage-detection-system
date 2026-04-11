@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 5-Microphone Live Leakage Detection System
-GitHub: https://github.com/YOUR_USERNAME/leakage-detection-system
+GitHub: https://github.com/TheaneshwaranRavi/leakage-detection-system
 """
 
 import numpy as np
